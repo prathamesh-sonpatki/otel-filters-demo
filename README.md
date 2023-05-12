@@ -8,10 +8,17 @@ https://www.loom.com/share/87499a7bbf3d4028acc89fe4c09655f7
 
 ## Getting started
 
+Make sure you have docker and docker-compose setup as we will be using it to run the opentelemetry collector as well
+as the golang app that generates metrics for the purpose this demo.
+
+You should also use a metric storage backend where you can verify the filtered data. I am using [Levitate](https://last9.io/levitate-tsdb) by Last9 as my metric storage here but you can use any other as well.
+
+> Refer to [Getting started with Levitate](https://docs.last9.io/docs/levitate-onboard) guide to setup cluster on Levitate and obtain the basic auth username, password and remote write URL.
+
 Replace the following sections from `otel-collector-config.yaml` with the your metric storage destination's
 username, password and remote write URL respectively.
 
-> I am using [Levitate](https://last9.io/levitate-tsdb) by Last9 as my metric storage here but you can use any other as well.
+>
 
 ```yaml
 extensions:
@@ -39,9 +46,9 @@ exporters:
     endpoint: "<Cluster 2>" # Replace with backend 2 URL
 ```
 
-Start the setup using `docker-compose up`
-
-Observe the metrics on `localhost:8888/metrics` and update the filter configuration in the `otel-collector-config.yaml`
+- Start the setup using `docker-compose up`.
+- Try hitting cURL requests to `localhost:9000/hello` and `localhost:9000/world` multiple times to generate time series for app metrics.
+- Observe the metrics on `localhost:8000/metrics` and update the filter configuration in the `otel-collector-config.yaml`.
 
 
 ```yaml
@@ -60,5 +67,4 @@ processors:
         - MetricName == "my.other.metric"
 ```
 
-After that, restart the process again, and verify that collector is able to pass on filtered time series
-to different backends based on the filters you created.
+After that, restart the process again using `docker-compose`, and verify that collector is able to pass on filtered time series to different backends based on the filters you created.
